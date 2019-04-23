@@ -1,21 +1,21 @@
-one sig KDtree {
-	dim : set Int,
-	nodes: set Node
-} {
-	one dim
-	dim = 2
-}
-
 sig Node {
-	lchild: lone Node,
-	rchild: lone Node	
+	left: lone Node,
+	right: lone Node
 }
 
-fact treeProps {
-	no n: Node | n not in KDtree.nodes
-	all n: Node | n not in n.^(rchild) and n not in n.^(lchild)
-	no n: Node | n in n.^(rchild) + n.^(lchild)
-}
+fact rooted {
+      some r: Node | all n: Node-r | {
+          n in r.^(left + right)
+      }
+    }
+    fact acyclic {
+      all n: Node | n not in n.^(left + right)
+    }
+    fact loneParent {
+      all n: Node | {
+        no n.right & n.left
+        lone (left+right).n
+       }
+    }
 
-
-run {} for 7 int, exactly 6 Node
+run{} for exactly 4 Node
