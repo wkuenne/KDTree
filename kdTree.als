@@ -1,5 +1,6 @@
 one sig KDTree {
 	dimensions: Int
+//make the tree a set of nodes? semantically makes sense
 }
 
 sig Node {
@@ -7,8 +8,13 @@ sig Node {
 	right: lone Node,
 	parent: lone Node,
 	depth: Int,
-	dimensions: seq Int
+	dimensions: seq Int,
+//	aligned: Int //this is whatever dimension the node is splitting the space on (ie 0 to k-1)
 }
+// {
+//	aligned =
+//check that all aligned are in this range, check that each subsequent aligned is correct (+1 or back to 0)
+//}
 
 lone sig Root extends Node {}
 
@@ -51,15 +57,18 @@ fact depths {
 	Root.depth = 0
 }
 
+//consolidate these into a single tree properties fact?
+
+//this should be an assert
 //fact completeness {
 //	all n: Node | all c: Node | {
 //		isChild[n, c] and hasChild[c] implies one n.left and one n.right
 //	}
 //}
 
-fact isKDRacist {
+fact isSorted {
 	all n: Node | {
-		//TODO modulo//
+		//TODO modulo//  rem[depth, KDTree.dimensions] <-- gives the attribute being split on at any given depth
 		//n.right.*(left + right).dimensions[n.depth] > n.dimensions[n.depth]
 		//n.left.*(left + right).dimensions[n.depth] < n.dimensions[n.depth]
 		all c: Node | {
