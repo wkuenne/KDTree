@@ -1,7 +1,3 @@
-one sig KDTree {
-	dimensions: Int
-//make the tree a set of nodes? semantically makes sense
-}
 
 sig Node {
 	left: lone Node,
@@ -19,9 +15,9 @@ sig Node {
 lone sig Root extends Node {}
 
 fact dimensionsMatch {
-	KDTree.dimensions = 4
+	#Root.dimensions > 0
 	all n: Node | {
-		#n.dimensions = KDTree.dimensions
+		#n.dimensions = #Root.dimensions
 	}
 }
 
@@ -66,16 +62,16 @@ fact depths {
 //	}
 //}
 
-fact isSorted {
-	all n: Node | {
-		//TODO modulo//  rem[depth, KDTree.dimensions] <-- gives the attribute being split on at any given depth
-		//n.right.*(left + right).dimensions[n.depth] > n.dimensions[n.depth]
-		//n.left.*(left + right).dimensions[n.depth] < n.dimensions[n.depth]
-		all c: Node | {
-			c in n.left.*(left + right) iff c.dimensions[n.depth] < n.dimensions[n.depth]
-		}
-	}
-}
+//fact isSorted {
+//	all n: Node | {
+//		//TODO modulo//  rem[depth, KDTree.dimensions] <-- gives the attribute being split on at any given depth
+//		//n.right.*(left + right).dimensions[n.depth] > n.dimensions[n.depth]
+//		//n.left.*(left + right).dimensions[n.depth] < n.dimensions[n.depth]
+//		all c: Node | {
+//			c in n.left.*(left + right) iff c.dimensions[n.depth] < n.dimensions[n.depth]
+//		}
+//	}
+//}
 
 pred isChild[n, c: Node] {
 	n.left = c or n.right = c
