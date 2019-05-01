@@ -4,7 +4,7 @@ sig Node {
 	right: lone Node,
 	parent: lone Node,
 	depth: Int,
-	dimensions: seq Int,
+	dimensions: seq Int
 }
 
 lone sig Root extends Node {}

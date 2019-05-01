@@ -3,16 +3,32 @@
 
 <view>
 
+<projection> <type name="State"/> </projection>
+
 <defaultnode/>
 
 <defaultedge/>
 
 <node>
    <type name="Int"/>
+   <type name="NearestNeighbors"/>
+   <type name="State"/>
    <type name="String"/>
+   <type name="Target"/>
    <type name="kdTree/Node"/>
    <type name="kdTree/Root"/>
+   <type name="ordering/Ord"/>
    <type name="seq/Int"/>
+   <set name="$e" type="Event"/>
+   <set name="First" type="ordering/Ord"/>
+   <set name="Next" type="ordering/Ord"/>
+   <set name="post" type="Event"/>
+   <set name="pre" type="Event"/>
+   <set name="searching" type="kdTree/Node"/>
+</node>
+
+<node visible="no">
+   <type name="Event"/>
 </node>
 
 <node visible="yes">
@@ -20,11 +36,14 @@
 </node>
 
 <edge visible="no" attribute="yes">
+   <relation name="coords"> <type name="Target"/> <type name="seq/Int"/> <type name="Int"/> </relation>
    <relation name="depth"> <type name="kdTree/Node"/> <type name="Int"/> </relation>
 </edge>
 
 <edge visible="no" attribute="yes" constraint="yes">
    <relation name="dimensions"> <type name="kdTree/Node"/> <type name="seq/Int"/> <type name="Int"/> </relation>
+   <relation name="k"> <type name="Target"/> <type name="Int"/> </relation>
+   <relation name="nodes"> <type name="NearestNeighbors"/> <type name="kdTree/Node"/> </relation>
    <relation name="parent"> <type name="kdTree/Node"/> <type name="kdTree/Node"/> </relation>
 </edge>
 
