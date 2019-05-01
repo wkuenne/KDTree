@@ -1,4 +1,3 @@
-
 sig Node {
 	left: lone Node,
 	right: lone Node,
@@ -62,16 +61,26 @@ fact depths {
 //	}
 //}
 
-//fact isSorted {
-//	all n: Node | {
-//		//TODO modulo//  rem[depth, KDTree.dimensions] <-- gives the attribute being split on at any given depth
-//		//n.right.*(left + right).dimensions[n.depth] > n.dimensions[n.depth]
-//		//n.left.*(left + right).dimensions[n.depth] < n.dimensions[n.depth]
-//		all c: Node | {
-//			c in n.left.*(left + right) iff c.dimensions[n.depth] < n.dimensions[n.depth]
-//		}
+fact isSorted {
+	all n: Node {
+		all c: Node | c in n.left.*(left+right)  iff  {
+			// everything on the left subtree
+			c.dimensions[rem[n.depth, #n.dimensions]] < c.dimensions[rem[n.depth, #n.dimensions]]
+		}
+	}
+
+	all n: Node {
+		all c: Node | c in n.left.*(left+right)  iff  {
+			// everything on the left subtree
+			c.dimensions[rem[n.depth, #n.dimensions]] < c.dimensions[rem[n.depth, #n.dimensions]]
+		}
+	}
+
+//	all n: Node | n in Root.right.*(left+right) iff {
+//		// everything on the right subtree
+//		n.dimensions[0] >= Root.dimensions[0]
 //	}
-//}
+}
 
 pred isChild[n, c: Node] {
 	n.left = c or n.right = c
@@ -81,4 +90,4 @@ pred hasChild[n: Node]  {
 	some n.left or some n.right
 }
 
-run{} for exactly 5 Node, 7 Int
+run{} for exactly 3 Node, 7 Int
