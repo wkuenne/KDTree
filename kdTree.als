@@ -57,6 +57,14 @@ fact isSorted {
 	}
 }
 
+fact median {
+	all n: Node {
+		sub[#n.left.*(left+right), #n.right.*(left+right)] <= 1 and
+		sub[#n.left.*(left+right), #n.right.*(left+right)] >= -1
+	}
+}
+
+
 pred isChild[n, c: Node] {
 	n.left = c or n.right = c
 }
@@ -65,4 +73,4 @@ pred hasChild[n: Node]  {
 	some n.left or some n.right
 }
 
-run{} for exactly 5 Node, 7 Int
+run{} for exactly 4 Node, 7 Int
