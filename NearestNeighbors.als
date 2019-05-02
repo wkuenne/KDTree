@@ -1,5 +1,5 @@
 open util/ordering[State]
-open KDTree
+open kdTree
 
 one sig Target {
 	dimensions: seq Int,
