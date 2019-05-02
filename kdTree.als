@@ -1,10 +1,12 @@
-
 sig Node {
 	left: lone Node,
 	right: lone Node,
-	parent: lone Node,
 	depth: Int,
 	dimensions: seq Int
+} {
+	all i: dimensions.Int | {
+		abs[dimensions[i]] > 0
+	}
 }
 
 lone sig Root extends Node {}
@@ -34,16 +36,9 @@ fact loneParent {
 	}
 }
 
-fact parents {
-	no Root.parent
-	all n: Node | all c: Node {
-		 isChild[n, c] implies c.parent = n
-	}
-}
-
 fact depths {
 	all n: Node-Root | {
-		n.depth = add[n.parent.depth, 1]
+		n.depth = add[n.~(left+right).depth, 1]
 	}
 	Root.depth = 0
 }
@@ -59,9 +54,12 @@ fact isSorted {
 
 fact median {
 	all n: Node {
-		sub[#n.left.*(left+right), #n.right.*(left+right)] <= 1 and
-		sub[#n.left.*(left+right), #n.right.*(left+right)] >= -1
+		abs[sub[#n.left.*(left+right), #n.right.*(left+right)]] <= 1
 	}
+}
+
+fun abs[n: Int] : n {
+	n < 0 implies sub[0, n] else n
 }
 
 
@@ -73,4 +71,4 @@ pred hasChild[n: Node]  {
 	some n.left or some n.right
 }
 
-run{} for exactly 4 Node, 7 Int
+run{} for exactly 6 Node, 5 Int

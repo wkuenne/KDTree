@@ -1,35 +1,41 @@
 open util/ordering[State]
-open kdTree
+open KDTree
 
 one sig Target {
 	dimensions: seq Int,
 	k: Int
 } {
 	#dimensions = #Root.dimensions
-	k <= #dimensions
+	k <= 2
 	k > 0
 }
 
-one sig NearestNeighbors {
-	nodes: set Node
-}
-
 sig State {
-	searching: set Node	
+	searching: seq Node,
+	nearestNeighbors: set Node
 }
 
 sig Event {
 	pre: State,
  	post: State
 } {
-	all n: pre.searching {
-		n.dimensions[rem[n.depth, #n.dimensions]] <= Target.dimensions[rem[n.depth, #n.dimensions]] implies {
-				n.right in post.searching
+	notFullNeighbors[pre.nearestNeighbors] implies {
+		post.nearestNeighbors = pre.nearestNeighbors + pre.searching.first
+	} else {
+		post.nearestNeighbors = pre.nearestNeighbors
+	}
+	lessThanAxis[pre.searching.first] implies {
+			notFullNeighbors[post.nearestNeighbors] implies {
+				post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
+			} else {
+				post.searching = pre.searching.rest.add[pre.searching.first.right]
+			}
+	} else {
+		notFullNeighbors[post.nearestNeighbors] implies {
+				post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
+		} else {
+			post.searching = pre.searching.rest.add[pre.searching.first.right]
 		}
-		n.dimensions[rem[n.depth, #n.dimensions]] > Target.dimensions[rem[n.depth, #n.dimensions]] implies {
-				n.left in post.searching
-		}
-		n not in post.searching
 	}
 }
 
@@ -39,16 +45,31 @@ fact trace {
 	}
 }
 
+pred lessThanAxis[n: Node] {
+	n.dimensions[rem[n.depth, #Root.dimensions]] <=	Target.dimensions[rem[n.depth, #Root.dimensions]]
+}
+
+pred notFullNeighbors[nearestNeighbors: set Node] {
+	#nearestNeighbors < Target.k
+}
 
 fact initial {
-	first.searching = Root
+	first.searching.first = Root
+	#first.searching = 1
+	no first.nearestNeighbors
 }
 
 fact last {
 	no last.searching
 }
 
+//TODO don't use this
+fun axisDist[s1, s2: seq Int, axis: Int] : Int {
+	abs[sub[s1[axis], s2[axis]]]
+}
 
+fun manhattanDist[s1, s2: seq Int] : Int {
+	sum i: s1.Int | abs[sub[s1[i], s2[i]]]
+}
 
-
-run{} for exactly 3 Node, 7 Int, 5 State,  4 Event
+run{} for exactly 3 Node, 6 Int, 4 State, 3 Event
