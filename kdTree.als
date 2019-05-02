@@ -115,3 +115,5 @@ run{} for exactly 7 Node, 6 Int
 
 
 //why is this running so fucking slow? I think isSorted is messed up
+//ok it's running faster now. it takes a long time to run the median check, but
+// good istances are produced quickly and the acyclic check is fast
