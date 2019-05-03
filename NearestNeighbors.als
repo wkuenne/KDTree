@@ -81,6 +81,12 @@ fact last {
 
 }
 
+//new is pre.searching.first
+//predicate that returns true if m is the index of the maximum value in sequence 
+pred maxIndex[s: seq Int, new: Int]{ 
+	one m: s.Int | all i: s.Int | s[m] >=s[i] and s[m] >= new implies s[m] = new
+}
+
 //TODO don't use this
 fun axisDist[s1, s2: seq Int, axis: Int] : Int {
 	abs[sub[s1[axis], s2[axis]]]
