@@ -25,17 +25,30 @@ sig Event {
 		post.nearestNeighbors = pre.nearestNeighbors
 	}
 	lessThanAxis[pre.searching.first] implies {
-			notFullNeighbors[post.nearestNeighbors] implies {
-				post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
-			} else {
-				post.searching = pre.searching.rest.add[pre.searching.first.right]
-			}
+			leftRecursion[pre, post]
 	} else {
 		notFullNeighbors[post.nearestNeighbors] implies {
 				post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
 		} else {
 			post.searching = pre.searching.rest.add[pre.searching.first.right]
 		}
+	}
+}
+
+pred leftRecursion[pre, post: State] {
+		notFullNeighbors[post.nearestNeighbors] implies {
+			post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
+		} else {
+			post.searching = pre.searching.rest.add[pre.searching.first.right]
+		}
+}
+
+pred checkRightFromLeft[state: State, index: Int] {
+	lone max: state.nearestNeighbors | {
+		all n: state.nearestNeighbors | {
+			max.dimensions[index] >= n.dimensions[index]
+		}
+		manhattanDist[max.dimensions, Target.dimensions] > axisDist[max.dimensions, Target.dimensions, index]
 	}
 }
 
@@ -72,4 +85,4 @@ fun manhattanDist[s1, s2: seq Int] : Int {
 	sum i: s1.Int | abs[sub[s1[i], s2[i]]]
 }
 
-run{} for exactly 3 Node, 6 Int, 4 State, 3 Event
+run{} for exactly 4 Node, 6 Int, 4 State, 3 Event

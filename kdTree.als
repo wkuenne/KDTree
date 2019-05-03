@@ -6,7 +6,7 @@ sig Node {
 } {
 	//does this mean no zero is mapped to by any dimension?
 	all i: dimensions.Int | {
-		abs[dimensions[i]] > 0 
+		abs[dimensions[i]] <= 8
 	}
 	this not in left and this not in right //no node is its own child
 }
@@ -111,7 +111,7 @@ pred hasChild[n: Node]  {
 
 //could write a median function?
 
-run{} for exactly 7 Node, 6 Int
+run{} for exactly 7 Node, 5 Int
 
 
 //why is this running so fucking slow? I think isSorted is messed up
