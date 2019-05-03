@@ -2,9 +2,10 @@ sig Node {
 	left: lone Node,
 	right: lone Node,
 	depth: Int,
+	splitOn: Int,
 	dimensions: seq Int
 } {
-	//does this mean no zero is mapped to by any dimension?
+	/*this makes the code run faster because data only runs between -8 to 8*/
 	all i: dimensions.Int | {
 		abs[dimensions[i]] <= 8
 	}
@@ -31,7 +32,7 @@ fact rooted {
     }
 }
 
-//how does this work? make check
+/*all nodes have at most one parent */
 fact loneParent {
 	all n: Node | {
 		no n.right & n.left
@@ -39,15 +40,19 @@ fact loneParent {
 	}
 }
 
-//we could just define the depth as the parent's depth + 1 if we wanted to include a parent field for a node
+/*root depth is 0 and all other nodes depth are there parents  + 1. all nodes are split on
+depth % k, where k is the arity of the data (ie the data is k-dimensional*/
 fact depths {
+	// k = #Root.dimensions
 	all n: Node-Root | {
 		n.depth = add[n.~(left+right).depth, 1]
+		n.splitOn = rem[n.depth, #Root.dimensions]
 	}
 	Root.depth = 0
+	Root.splitOn = rem[Root.depth, #Root.dimensions]
 }
 
-//renamed sort because it's a process
+/*process of building the tree from data nodes*/
 fact sort {
 	all p: Node { //p for parent, c for children
 		//p is the median <--doesn't make it be the median <-- verified in a check
@@ -59,24 +64,6 @@ fact sort {
 	}
 }
 
-
-/*checks to: DO NOT ERASE!
-- that no node is its own child <-- made a fact of the nodes
-- that the tree is acyclic <-- checked
-- that each parent of a subtree is the median of all the data in that subtree <-- see below
-- that it isSorted <-- checked by every node being the median of its subtree for a given dimension
-*/
-
-//
-//fact isSorted {
-//	all n: Node {
-//		all c: Node | c in n.left.*(left+right) iff {
-//			// everything on the left subtree
-//			c.dimensions[rem[n.depth, #n.dimensions]] < n.dimensions[rem[n.depth, #n.dimensions]]
-//		}
-//	}
-//}
-
 /*every node is the median of its own subtree. Verify this by showing that for every node n, the number of nodes with data values 
 less than n's at the given dimension is equal (or off by 1) to the number of nodes with data values greater than or equal to n's at the
 given dimension. Essentially shows that n is the true median of the dataset of a given subtree*/
@@ -85,13 +72,22 @@ check median {
 		abs[sub[#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] < n.dimensions[rem[n.depth, #n.dimensions]]},
 				#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] >= n.dimensions[rem[n.depth, #n.dimensions]]}]] <= 1
 	}
-} for exactly 5 Node, 6 Int
+} for exactly 7 Node, 5 Int
 
 /*checks that there are no cycles in the tree*/
 check acyclic {
     all n: Node | n not in n.^(left + right)
-} for exactly 5 Node, 6 Int
+} for exactly 7 Node, 5 Int
 
+/*checks that the dimension being used at each depth is depth % k, where k is the dimension of the data*/
+check splitAtSameDimensionForAGivenDepth {
+	all a, b : Node | a.depth = b.depth implies a.splitOn = b.splitOn
+} for exactly 7 Node, 5 Int
+
+/*checks that the dimension being split on is depth % dimensions*/
+check splitOnConsistent {
+	all n : Node | n.splitOn = rem[n.depth, #Root.dimensions]
+}
 
 
 /*absolute value function */
@@ -109,11 +105,4 @@ pred hasChild[n: Node]  {
 	some n.left or some n.right
 }
 
-//could write a median function?
-
 run{} for exactly 7 Node, 5 Int
-
-
-//why is this running so fucking slow? I think isSorted is messed up
-//ok it's running faster now. it takes a long time to run the median check, but
-// good istances are produced quickly and the acyclic check is fast
