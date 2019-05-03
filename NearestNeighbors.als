@@ -19,7 +19,7 @@ sig Event {
 	pre: State,
  	post: State
 } {
-	notFullNeighbors[pre.nearestNeighbors] implies {
+	notFullNeighbors[pre] implies {
 		post.nearestNeighbors = pre.nearestNeighbors + pre.searching.first
 	} else {
 		post.nearestNeighbors = pre.nearestNeighbors
