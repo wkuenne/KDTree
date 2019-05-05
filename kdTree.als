@@ -18,7 +18,7 @@ lone sig Root extends Node {}
 /* must have all the data be of the same dimension otherwise you won't
 be able to build a KD tree from it */
 fact dimensionsMatch {
-	#Root.dimensions > 0
+	#Root.dimensions = 2
 	all n: Node | {
 		#n.dimensions = #Root.dimensions
 	}

@@ -19,32 +19,36 @@ sig Event {
 	pre: State,
  	post: State
 } {
-	notFullNeighbors[pre.nearestNeighbors] implies {
+	notFullNeighbors[pre] implies {
 		post.nearestNeighbors = pre.nearestNeighbors + pre.searching.first
 	} else {
 		post.nearestNeighbors = pre.nearestNeighbors
 	}
 	lessThanAxis[pre.searching.first] implies {
-			leftRecursion[pre, post]
+		leftRecursion[pre, post, rem[pre.searching.first.depth, #Root.dimensions]]
 	} else {
-		notFullNeighbors[post.nearestNeighbors] implies {
-				post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
-		} else {
-			post.searching = pre.searching.rest.add[pre.searching.first.right]
-		}
+		rightRecursion[pre, post, rem[pre.searching.first.depth, #Root.dimensions]]
 	}
 }
 
-pred leftRecursion[pre, post: State] {
-		notFullNeighbors[post.nearestNeighbors] implies {
+pred leftRecursion[pre, post: State, index: Int] {
+		notFullNeighbors[post] or recurseOnOtherSubtree[post, index] implies {
 			post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
 		} else {
 			post.searching = pre.searching.rest.add[pre.searching.first.right]
 		}
 }
 
-pred checkRightFromLeft[state: State, index: Int] {
-	lone max: state.nearestNeighbors | {
+pred rightRecursion[pre, post: State, index: Int] {
+	notFullNeighbors[post] or recurseOnOtherSubtree[post, index] implies {
+		post.searching = pre.searching.rest.add[pre.searching.first.right].add[pre.searching.first.left]
+	} else {
+		post.searching = pre.searching.rest.add[pre.searching.first.right]
+	}
+}
+
+pred recurseOnOtherSubtree[state: State, index: Int] {
+	some max: state.nearestNeighbors | {
 		all n: state.nearestNeighbors | {
 			max.dimensions[index] >= n.dimensions[index]
 		}
@@ -62,8 +66,8 @@ pred lessThanAxis[n: Node] {
 	n.dimensions[rem[n.depth, #Root.dimensions]] <=	Target.dimensions[rem[n.depth, #Root.dimensions]]
 }
 
-pred notFullNeighbors[nearestNeighbors: set Node] {
-	#nearestNeighbors < Target.k
+pred notFullNeighbors[state: State] {
+	#state.nearestNeighbors < Target.k
 }
 
 fact initial {
@@ -74,7 +78,18 @@ fact initial {
 
 fact last {
 	no last.searching
+
 }
+
+//new is pre.searching.first
+//predicate that returns true if m is the index of the maximum value in sequence 
+pred replaceMax[pre, post: State, new: Node]{ 
+	some m: pre.nearestNeighbors | all i: pre.nearestNeighbors | manhattanDist[m.dimensions, Target.dimensions]
+		 >=  manhattanDist[i.dimensions, Target.dimensions] and 
+		 manhattanDist[m.dimensions, Target.dimensions] >=  manhattanDist[new.dimensions, Target.dimensions]
+			 implies post.nearestNeighbors = pre.nearestNeighbors - m + new
+}
+
 
 //TODO don't use this
 fun axisDist[s1, s2: seq Int, axis: Int] : Int {
