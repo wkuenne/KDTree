@@ -79,7 +79,7 @@ check median {
 		abs[sub[#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] < n.dimensions[rem[n.depth, #n.dimensions]]},
 				#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] >= n.dimensions[rem[n.depth, #n.dimensions]]}]] <= 1
 	}
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 /*checks that for each node, there is no data in its left subtree that is greater than the node at that dimension,
 and that there is no data in its right subtree that is  less than the node at that dimension*/
@@ -88,28 +88,28 @@ check sortedRight {
 		no b: a.left.*(left+right) | b.dimensions[rem[a.depth, #a.dimensions]] >= a.dimensions[rem[a.depth, #a.dimensions]]
 		no b: a.right.*(left+right) | b.dimensions[rem[a.depth, #a.dimensions]]  < a.dimensions[rem[a.depth, #a.dimensions]]
 	}
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 /*checks that there are no cycles in the tree*/
 check acyclic {
     all n: Node | n not in n.^(left + right)
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 /*checks that the dimension being used at each depth is depth % k, where k is the dimension of the data*/
 check splitAtSameDimensionForAGivenDepth {
 	all a, b : Node | a.depth = b.depth implies a.splitOn = b.splitOn
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 /*checks that the dimension being split on is depth % dimensions*/
 check splitOnConsistent {
 	all n : Node | n.splitOn = rem[n.depth, #Root.dimensions]
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 /*checks that the user's chosen dimension is consistently the arity of all the data*/
 check dimensionsMatch {
 	no a,b : Node | #a.dimensions != #b.dimensions //make a check
 	all n: Node | #n.dimensions = Root.k
-} for exactly 7 Node, 5 Int, 3 Dimension
+} for exactly 7 Node, 5 Int, exactly 5 Dimension, 5 seq
 
 
 /*absolute value function */

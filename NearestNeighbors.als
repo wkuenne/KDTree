@@ -100,4 +100,4 @@ fun manhattanDist[s1, s2: seq Int] : Int {
 	sum i: s1.Int | abs[sub[s1[i], s2[i]]]
 }
 
-run{} for exactly 4 Node, 6 Int, 4 State, 3 Event
+run{} for exactly 4 Node, 6 Int, 4 State, 3 Event, exactly 2 Dimension

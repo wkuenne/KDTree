@@ -28,16 +28,22 @@
 
 <node visible="no">
    <type name="Event"/>
+   <type name="kdTree/Dimension"/>
 </node>
 
 <node visible="yes">
    <type name="univ"/>
 </node>
 
+<edge visible="no">
+   <relation name="k"> <type name="kdTree/Root"/> <type name="Int"/> </relation>
+</edge>
+
 <edge visible="no" attribute="yes">
    <relation name="depth"> <type name="kdTree/Node"/> <type name="Int"/> </relation>
    <relation name="dimensions"> <type name="Target"/> <type name="seq/Int"/> <type name="Int"/> </relation>
    <relation name="dimensions"> <type name="kdTree/Node"/> <type name="seq/Int"/> <type name="Int"/> </relation>
+   <relation name="splitOn"> <type name="kdTree/Node"/> <type name="Int"/> </relation>
 </edge>
 
 <edge visible="no" attribute="yes" constraint="yes">
