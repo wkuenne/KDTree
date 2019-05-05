@@ -12,15 +12,22 @@ sig Node {
 	this not in left and this not in right //no node is its own child
 }
 
-lone sig Root extends Node {}
+/*used in run statment to choose k-dimensional space for data*/
+sig Dimension {}
+
+lone sig Root extends Node { 
+	k: Int
+} {
+	k = #Dimension
+}
 
 
 /* must have all the data be of the same dimension otherwise you won't
 be able to build a KD tree from it */
 fact dimensionsMatch {
-	#Root.dimensions = 2
+//	#Root.dimensions = 5
 	all n: Node | {
-		#n.dimensions = #Root.dimensions
+		#n.dimensions = Root.k
 	}
 }
 
@@ -72,22 +79,37 @@ check median {
 		abs[sub[#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] < n.dimensions[rem[n.depth, #n.dimensions]]},
 				#{c : n.^(left + right) | c.dimensions[rem[n.depth, #n.dimensions]] >= n.dimensions[rem[n.depth, #n.dimensions]]}]] <= 1
 	}
-} for exactly 7 Node, 5 Int
+} for exactly 7 Node, 5 Int, 3 Dimension
+
+/*checks that for each node, there is no data in its left subtree that is greater than the node at that dimension,
+and that there is no data in its right subtree that is  less than the node at that dimension*/
+check sortedRight {
+	all a: Node {
+		no b: a.left.*(left+right) | b.dimensions[rem[a.depth, #a.dimensions]] >= a.dimensions[rem[a.depth, #a.dimensions]]
+		no b: a.right.*(left+right) | b.dimensions[rem[a.depth, #a.dimensions]]  < a.dimensions[rem[a.depth, #a.dimensions]]
+	}
+} for exactly 7 Node, 5 Int, 3 Dimension
 
 /*checks that there are no cycles in the tree*/
 check acyclic {
     all n: Node | n not in n.^(left + right)
-} for exactly 7 Node, 5 Int
+} for exactly 7 Node, 5 Int, 3 Dimension
 
 /*checks that the dimension being used at each depth is depth % k, where k is the dimension of the data*/
 check splitAtSameDimensionForAGivenDepth {
 	all a, b : Node | a.depth = b.depth implies a.splitOn = b.splitOn
-} for exactly 7 Node, 5 Int
+} for exactly 7 Node, 5 Int, 3 Dimension
 
 /*checks that the dimension being split on is depth % dimensions*/
 check splitOnConsistent {
 	all n : Node | n.splitOn = rem[n.depth, #Root.dimensions]
-}
+} for exactly 7 Node, 5 Int, 3 Dimension
+
+/*checks that the user's chosen dimension is consistently the arity of all the data*/
+check dimensionsMatch {
+	no a,b : Node | #a.dimensions != #b.dimensions //make a check
+	all n: Node | #n.dimensions = Root.k
+} for exactly 7 Node, 5 Int, 3 Dimension
 
 
 /*absolute value function */
@@ -105,4 +127,10 @@ pred hasChild[n: Node]  {
 	some n.left or some n.right
 }
 
-run{} for exactly 7 Node, 5 Int
+/*a perfect binary tree has 2^h+1 - 1 nodes, where h is the zero-indexed height of the tree.*/
+/*if the user want a k-dimension above 4, they need to specify k seq in the run statement to accomodate it*/
+run{} for exactly 12 Node, 5 Int, exactly 5 Dimension, 5 seq
+run{} for exactly 12 Node, 5 Int, exactly 4 Dimension
+run{} for exactly 12 Node, 5 Int, exactly 3 Dimension
+run{} for exactly 7 Node, 5 Int, exactly 2 Dimension
+run{} for exactly 7 Node, 5 Int, exactly 1 Dimension
