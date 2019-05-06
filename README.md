@@ -2,8 +2,8 @@ HANDIN: final
 
 
 OVERVIEW:
-- KD-tree data structure implemented i nalloy (run statments for dimensions 1-5)
-- < fill in this part with nearest neighbor stuff > 
+- KD-tree data structure implemented in alloy (run statments for dimensions 1-5)
+- nearest neighbor algorithm implemented in alloy and projected over states
 - please configure kdTree.als with KDTree.thm, and NearestNeighbors.als with NearestNeighbors.thm
 
 DESIGN CHOICES:
