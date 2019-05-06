@@ -4,9 +4,8 @@ sig Node {
 	depth: Int,
 	dimensions: seq Int
 } {
-	//does this mean no zero is mapped to by any dimension?
 	all i: dimensions.Int | {
-		abs[dimensions[i]] <= 8
+		dimensions[i] > -8 and dimensions[i] < 8
 	}
 	this not in left and this not in right //no node is its own child
 }
