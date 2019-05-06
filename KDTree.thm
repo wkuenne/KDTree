@@ -9,26 +9,30 @@
 
 <node>
    <type name="Int"/>
-   <type name="Node"/>
    <type name="Root"/>
    <type name="String"/>
    <type name="seq/Int"/>
 </node>
 
+<node numberatoms="no" label="data node">
+   <type name="Node"/>
+</node>
+
 <node visible="no">
-   <type name="KDTree"/>
+   <type name="Dimension"/>
 </node>
 
 <node visible="yes">
    <type name="univ"/>
 </node>
 
-<edge visible="no">
-   <relation name="parent"> <type name="Node"/> <type name="Node"/> </relation>
-</edge>
-
 <edge visible="no" attribute="yes">
    <relation name="depth"> <type name="Node"/> <type name="Int"/> </relation>
+   <relation name="k"> <type name="Root"/> <type name="Int"/> </relation>
+   <relation name="splitOn"> <type name="Node"/> <type name="Int"/> </relation>
+</edge>
+
+<edge visible="no" merge="no" attribute="yes" constraint="no">
    <relation name="dimensions"> <type name="Node"/> <type name="seq/Int"/> <type name="Int"/> </relation>
 </edge>
 
