@@ -6,7 +6,6 @@ one sig Target {
 	k: Int
 } {
 	#dimensions = #Root.dimensions
-	k = 3
 	k > 0
 	all i: dimensions.Int | {
 		dimensions[i] > -8 and dimensions[i] < 8
@@ -119,9 +118,10 @@ pred notFullNeighbors[state: State] {
 	#state.nearestNeighbors < Target.k
 }
 
+// begin with only the root in searching with an empty nearest neighbors
 fact initial {
 	first.searching.first = Root
-	#first.searching = 1
+	first.searching.last = Root
 	no first.nearestNeighbors
 }
 
@@ -129,13 +129,32 @@ fact last {
 	no last.searching
 }
 
+// calculates the axis distance between two sequences
 fun axisDist[s1, s2: seq Int, axis: Int] : Int {
 	abs[sub[s1[axis], s2[axis]]]
 }
 
+// calculates the manhattan distance between two nodes
 fun manhattanDist[s1, s2: seq Int] : Int {
 	sum i: s1.Int | abs[sub[s1[i], s2[i]]]
 }
+
+check sizeOfNeighbors {
+	Target.k < #Node implies {
+		#last.nearestNeighbors = Target.k 
+	} else { 
+		#last.nearestNeighbors = #Node
+	}
+} for exactly 7 Node, 5 Int, exactly 3 Dimension, exactly 8 State, exactly 7 Event
+
+check neighborsAreClosest {
+	all node: Node - last.nearestNeighbors | {
+		all neighbor: last.nearestNeighbors | {
+			manhattanDist[node.dimensions, Target.dimensions] >= 
+			manhattanDist[neighbor.dimensions, Target.dimensions]
+		}
+	}
+} for exactly 7 Node, 5 Int, exactly 2 Dimension, exactly 8 State, exactly 7 Event
 
 run{} for exactly 7 Node, 5 Int, exactly 3 Dimension, 8 State, 7 Event
 run{} for exactly 7 Node, 5 Int, exactly 2 Dimension, 8 State, 7 Event
